@@ -5,25 +5,25 @@ D = chaining(path) ;
 %%
 
 % Read PointViewMatrix.txt into D
-D = importdata('Data/PointViewMatrix.txt') ;
+%D = importdata('Data/PointViewMatrix.txt') ;
 
 
 %%
-% Normalize
-D = D - mean(D')' ;
+j = 0 ;
+IMAGES = dir('Data/House/*.png') ;
+n_stitching = 3 ;
+M = [] ;
+S = [] ;
 
-% Apply SVD
-[U, W, V] = svd(D) ;
-
-% Reduce to rank 3
-W_3 = W(1:3, 1:3) ;
-U_3 = U(:,1:3) ;
-V_3 = V(:, 1:3) ;
-
-% Decomposition of Motion and Structure (M and S)that minimizes abs((D-MS)^2)
-M = U_3 * sqrtm(W_3) ;
-S = sqrtm(W_3) * V_3' ;
-
+for j = 1:length(IMAGES)-n_stitching
+    images = IMAGES(j:j+3) ;
+    D = chaining(images) ;
+    [M_last, S_last] = structure_from_motion(D) ;
+    if j > 1
+        [d,Z,tr] = procrustes(S, S_last) ;
+        S = [S S_last] ;
+    end
+end
 %%
 X = S(1,:) ;
 Y = S(2,:) ;
