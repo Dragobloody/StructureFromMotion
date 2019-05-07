@@ -1,14 +1,13 @@
-function PointViewMatrix = chaining(images)
+function PointViewMatrix = chaining(images, path)
     % images = dir(strcat(path, '/' , '*.png')) ;
     % images is a struct 
-    path = 'Data/House' ;
     img1_name = images(1).name ;
     img1 = imread(strcat(path, '/', img1_name)) ;
-    bg_threshold = 5 ;
+    bg_threshold = 100 ;
     f_row = 1 ;
-
+    %f = waitbar(length(images), 'Progress...')
+    
     for k = 2:length(images) %images(2:end)
-        
         img2_name = images(k).name ;
         img2 = imread(strcat(path, '/', img2_name)) ;
         [keypoints1, keypoints2, scores] = keypoint_matching(img1, img2, bg_threshold) ; % what value to threshold?
@@ -47,7 +46,7 @@ function PointViewMatrix = chaining(images)
 
         end
         size(PVM) ;
-        f_row = f_row + 2  % each iteration jump 2 rows
+        f_row = f_row + 2 ; % each iteration jump 2 rows
     end
     PointViewMatrix = PVM;
 end
